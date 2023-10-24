@@ -6,18 +6,13 @@ User:
 - User ID will be the NTU network user ID, that is the part before @ in email 
 address.
 - Assume all users use the default password, which is password. 
-
-o A user can change password in the system. 
-
-o A user will have faculty information. E.g, EEE, SCSE. 
-
-• A student list and staff list can be initiated through files uploaded into the system at 
+- A user can change password in the system. 
+- A user will have faculty information. E.g, EEE, SCSE. 
+- A student list and staff list can be initiated through files uploaded into the system at 
 initialization. The sample student file and staff file are provided. 
 
-
 Staff:
-
-• A staff will be able to create, edit and delete camps.
+- A staff will be able to create, edit and delete camps.
 
 • A staff can toggle the visibility of the camp to be “on” or “off”. This will be reflected 
 in the camp list that will be visible to students. 
