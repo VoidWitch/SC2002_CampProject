@@ -1,20 +1,30 @@
 # SC2002_CampProject
 The assignment for your group will be to design and develop a: Camp Application and Management System (CAMs). CAMs is an application for staff and students to manage, view and register for camps within NTU. The application will act as a centralized hub for all staff and  students. 
 
-###User:
+User:
+
 • All users will need to login to this hub using their user account. 
+
 o User ID will be the NTU network user ID, that is the part before @ in email 
 address.
+
 o Assume all users use the default password, which is password. 
+
 o A user can change password in the system. 
+
 o A user will have faculty information. E.g, EEE, SCSE. 
+
 • A student list and staff list can be initiated through files uploaded into the system at 
 initialization. The sample student file and staff file are provided. 
 
-###Staff:
+
+Staff:
+
 • A staff will be able to create, edit and delete camps.
+
 • A staff can toggle the visibility of the camp to be “on” or “off”. This will be reflected 
 in the camp list that will be visible to students. 
+
 • A staff can view all camps.
 • A staff can see list of camps that his/her created in a separate menu list so they can 
 edit the camps they created. 
@@ -29,6 +39,7 @@ participants. There should be filters for how the staff would want to generate t
 • A staff can also generate a performance report of the camp committee members.
 
 ###Camp information entered by the staff will include information like:
+
 o Camp Name
 o Dates
 o Registration closing date
@@ -40,13 +51,14 @@ o Description
 o Staff in charge (automatically tied to the staff who created it)
 
 
-###Camp
+Camp
 • Each camp should have Camp information as above.
 • Each camp will include a list of the students that have registered for it as camp 
 attendees and camp committee. 
 o Staff and camp committee members will be able to access this list.
 
-###Student:
+
+Student:
 • A student can only view the list of camps that are open to his/her user group (SCSE, 
 whole NTU etc.) and if their visibility has been toggled “on”.
 • A student can view the remaining slots of each camp that is open to his/her.
