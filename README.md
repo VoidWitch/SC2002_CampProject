@@ -5,8 +5,7 @@ User:
 - All users will need to login to this hub using their user account.
 - User ID will be the NTU network user ID, that is the part before @ in email 
 address.
-
-o Assume all users use the default password, which is password. 
+- Assume all users use the default password, which is password. 
 
 o A user can change password in the system. 
 
