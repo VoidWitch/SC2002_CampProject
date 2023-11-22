@@ -27,13 +27,14 @@ public class User {
 		System.out.println("LOG IN PAGE");
 		System.out.println("Please enter your UserID & Password.");
 		System.out.println("You only have 3 attempts.");
-		try (Scanner sc = new Scanner(System.in)){
+		
 			int attempt=0;
 			while(attempt<3) {
 				System.out.println("Enter your UserID: ");
-				String enteredUserID = sc.nextLine();
+				String enteredUserID = AppCAMS.sc.nextLine();
 				System.out.println("Enter your password: ");
-				String enteredPassword = sc.nextLine();
+				String enteredPassword = AppCAMS.sc.nextLine();
+				boolean isLoginSuccessful = false;
 				for(User user : users) {
 					if(user.userID.equals(enteredUserID) && user.password.equals(enteredPassword)) {
 						if(enteredPassword.equals("password")) {
@@ -41,16 +42,17 @@ public class User {
 						}
 						loggedInUser = user;
 						return true;
-					}
-					else {
-						System.out.println("Wrong credentials! You have " + (2-attempt) + " attempts left.");
-						attempt++;
+					
 					}
 				}
-			}
+				System.out.println("Wrong credentials! You have " + (2-attempt) + " attempts left.");
+				attempt++;
+					
+				}
+			
 			System.out.println("You have exceeded number of attempts.");
 			return false;
-			}
+			
 	}
 	
 	public void viewProfile() {
@@ -61,16 +63,16 @@ public class User {
 	}
 	
 	public static void changePassword(User user) {
-		try (Scanner sc = new Scanner(System.in)){
+		
 			String oldPassword;
 			do {
 				System.out.println("Enter your old password (Enter <Quit> to exit): ");
-				oldPassword = sc.nextLine();
+				oldPassword = AppCAMS.sc.nextLine();
 				if(user.password.equals(oldPassword)) {
 					System.out.println("Enter your new password: ");
-					String newPassword = sc.nextLine();
+					String newPassword = AppCAMS.sc.nextLine();
 					System.out.println("Confirm your new password: ");
-					String newPassword2 = sc.nextLine();
+					String newPassword2 = AppCAMS.sc.nextLine();
 					if (newPassword2.equals(newPassword)) {
 						user.password = newPassword;
 						System.out.println("Password successfully changed.");
@@ -88,7 +90,7 @@ public class User {
 					System.out.println("The password you entered is incorrect.");
 				}
 			}while(true);
-		}
+		
 
 	}
 	
@@ -100,6 +102,14 @@ public class User {
 		return this.faculty;
 	}
 	
+	public boolean getIsStaff() {
+		return this.isStaff;
+	}
+	
+	public String getEmail() {
+		return this.email;
+	}
+	/*
 	public static void main(String[] args) {
         // Assuming student_list.txt and staff_list.txt are in the current directory.
         try {
@@ -115,7 +125,8 @@ public class User {
 
             while ((line = staffReader.readLine()) != null) {
                 String[] parts = line.split(",");
-                User staff = new User(parts[0], parts[1], parts[2],false);
+                User user = new User(parts[0], parts[1], parts[2],false);
+                Staff staff = new Staff(parts[0], parts[1], parts[2]);
                 users.add(staff);
             }
 
@@ -171,4 +182,5 @@ public class User {
             }
         }
     }
+    */
 }

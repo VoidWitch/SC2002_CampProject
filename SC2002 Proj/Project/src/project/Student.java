@@ -29,6 +29,9 @@ public class Student extends User { //extends from User
 		
 		for(Camp camp: allCamps) {
 			//filtering faculty
+			if(checkCampBlacklist(camp)) {
+				continue;
+			}
 			if(super.getFaculty().equalsIgnoreCase(camp.getCampFaculty())== false){ //case-insensitive string comparison
 				//UML diagram dont have getCampFaculty in Camp Class
 				continue;
@@ -42,38 +45,40 @@ public class Student extends User { //extends from User
 			
 			openCamps.add(camp);
 	}
-		//can use printCamp in allCamp??
-		for(Camp camp : openCamps){
-           System.out.println(camp.getCampName()); }
 		
+		for(Camp camp : openCamps){
+           camp.viewCampInfo();
+           System.out.println();           
+           }
+	
 		
 	}
 	
+	public List<Camp> getOpenCamps() {
+		return this.openCamps;
+	}
+	/*
 	public void addDates(List<Integer> newDate) {
 		for(Integer date: newDate) {
 			dates.add(date);
 		}
 		
 	}
-	
-	public boolean checkDateClash(List<Integer> campDates) { //check if enrolled camp clashes, if no clash return true, continue with reg
+	*/
+	public boolean checkDateClash(int startDate, int endDate) { //check if enrolled camp clashes, if no clash return true, continue with reg
 		for(Camp enrolledCamp: enrolledCamps) {
-			List<Integer> enrolledCampDates = enrolledCamp.getCampDates();
-			for(Integer date: enrolledCampDates) {
-				if(campDates.contains(date)) {
-					return true;
-				}
+			if(startDate<=enrolledCamp.getCampEndDate() && endDate>=enrolledCamp.getCampStartDate()) {
+				return true;
 			}
 		}
 		return false;
 	}
 	
-	public void viewRemainingSlots(Camp camp) {
+	public void viewRemainingSlots(Camp opCamp) {
 		
-		for(Camp opCamp: openCamps) {
-			System.out.printf("Remaining Slots for " + opCamp.getCampName() + ": " + camp.getRemainingSlots());
-			//no getRemainingSlots method
-		}
+		System.out.printf("Remaining Slots for " + opCamp.getCampName() + ": " + opCamp.getRemainingSlots());
+		//no getRemainingSlots method
+		
 		
 	}
 	
@@ -99,32 +104,29 @@ public class Student extends User { //extends from User
 				campOption = sc.nextInt();
 				Camp selectedCamp = getCampOption(campOption);
 				
-				if(selectedCamp.getRemainingSlots() == 0) {
-					System.out.println("No more slots. Registration unsuccessful.");
-					return;
-				}
-				
-				if (selectedCamp.getRegistrationClosingDate() < System.currentTimeMillis()){
-					System.out.println("Registration date over. ");
-					return;
-				}
-				
-				
 				if(selectedCamp != null) {
-						if(!checkDateClash(selectedCamp.getCampDates()) && !checkCampBlacklist(selectedCamp)) {
-							addDates(selectedCamp.getCampDates());
-							selectedCamp.addAttendee(this); //??? do i add
-							enrolledCamps.add(selectedCamp);
-							int currentSlots = camp.getRemainingSlots(); //get and set not in UML
-							camp.setRemainingSlots(currentSlots-1);
-							System.out.println("Successfully registered for " + selectedCamp.getCampName() + " as an attendee.");
-						}
-						else
-							System.out.println("Date clash! Registration failed. ");
-					
-					}
-		
-					
+					if(checkCampBlacklist(selectedCamp)){
+                        System.out.println("Blacklisted! Registration failed.");
+                        break;
+                    }
+                    if(checkDateClash(selectedCamp.getCampStartDate(),selectedCamp.getCampEndDate())){
+                        System.out.println("Date Clash! Registration failed.");
+                        break;
+                    }
+                    if (selectedCamp.getRegistrationClosingDate() < System.currentTimeMillis()){
+                        System.out.println("Registration date over. ");
+                        break;
+                    }
+                    if(selectedCamp.getRemainingSlots() == 0) {
+                        System.out.println("No more slots. Registration unsuccessful.");
+                        break;
+                    }
+                    selectedCamp.addAttendee(this); //add attendee auto updates no. of participants
+                    enrolledCamps.add(selectedCamp);
+                    System.out.println("Successfully registered for " + selectedCamp.getCampName() + " as an attendee.");
+                  
+				}		
+
 				else
 					System.out.println("Invalid camp option.");
 				
@@ -148,28 +150,32 @@ public class Student extends User { //extends from User
 				campOpt = sc.nextInt();
 				Camp chosenCamp = getCampOption(campOpt);
 				
-				if(chosenCamp.getRemainingSlots() == 0) {
-					System.out.println("No more slots. Registration unsuccessful.");
-					return;
+				if(chosenCamp != null) {
+					if(checkCampBlacklist(chosenCamp)){
+                        System.out.println("Blacklisted! Registration failed.");
+                        break;
+                    }
+                    if(checkDateClash(chosenCamp.getCampStartDate(),chosenCamp.getCampEndDate())){
+                        System.out.println("Date Clash! Registration failed.");
+                        break;
+                    }
+                    if (chosenCamp.getRegistrationClosingDate() < System.currentTimeMillis()){
+                        System.out.println("Registration date over. ");
+                        break;
+                    }
+                    if(chosenCamp.getRemainingCommitteeSlots() == 0) {
+                        System.out.println("No more slots. Registration unsuccessful.");
+                        break;
+                    }
+                    this.isCampCommitteeMember = true;  //set bool to true
+                    CommitteeMember = new CampCommitteeMembers(super.getName(), super.getEmail(), super.getFaculty(), isCampCommitteeMember, chosenCamp
+);   //designate camp to committee member
+                    chosenCamp.addCampCommitteeMember(CommitteeMember); //add member to camp member list, auto update slots
+                    enrolledCamps.add(chosenCamp);
+                    System.out.println("Successfully registered for " + chosenCamp.getCampName() + " as camp committee member.");
+
 				}
 				
-				if (chosenCamp.getRegistrationClosingDate() < System.currentTimeMillis()){
-					System.out.println("Registration date over. ");
-					return;
-				}
-				if(chosenCamp != null) {
-					if(!checkDateClash(chosenCamp.getCampDates())&& !checkCampBlacklist(chosenCamp)) {
-					addDates(chosenCamp.getCampDates());
-					chosenCamp.addAttendee(this); //??? do i add
-					enrolledCamps.add(chosenCamp);
-					this.isCampCommitteeMember = true;
-					int currentSlots = camp.getCampCommitteeSlots(); //not in UML
-					camp.setCampCommitteeSlots(currentSlots-1);
-					System.out.println("Successfully registered for " + chosenCamp.getCampName() + " as camp committee member.");
-					}
-					else
-						System.out.println("Date clash! Registration unsuccessfully.");
-				}
 				
 				else
 					System.out.println("Invalid camp option.");
@@ -224,7 +230,7 @@ public class Student extends User { //extends from User
 		}
 	}
 	
-	public void editEnquiry(Enquiry enquiry) {
+	public void editEnquiry() {
 		if (ownEnquiries.isEmpty()) {
            System.out.println("No enquiries found.");
            return;
@@ -328,75 +334,18 @@ public class Student extends User { //extends from User
 		return withdrawnCamps.contains(camp);
 	}
 	
-	public static void main(String[] args) {
-		List <Camp> allcamp = allCamp.getAllCamps();
-		Student student = (Student) User.loggedInUser;
-		Scanner sc = new Scanner(System.in);
-		int choice;
-		
-		while(true) {
-            System.out.println("\n--- Student Menu ---");
-            System.out.println("1. View Open Camps");
-            System.out.println("2. Register for a Camp");
-            System.out.println("3. View Registered Camps");
-            System.out.println("4. Submit Enquiry");
-            System.out.println("5. View Enquiries");
-            System.out.println("6. Withdraw from a Camp");
-            System.out.println("7. Change password");
-            System.out.println("8. Log Out");
-            System.out.println("9. Exit");
-            System.out.print("Enter your choice: ");
-            
-            try {
-            	choice = sc.nextInt();
-            	
-            	switch(choice) {
-            	case 1:
-            		student.viewOpenCamps();
-            		break;
-            	case 2:
-            		student.viewOpenCamps();
-            		System.out.println("Enter the camp you want to register: ");
-            		String campName = sc.nextLine();
-            		Camp campToRegister = allCamp.getCamp(campName);
-            		student.registerCamp(campToRegister);
-            		break;
-            	case 3:
-            		student.viewRegisteredCamps();
-            		break;
-            	case 4:
-            		System.out.println("Enter the camp you want to enquire: ");
-            		campName = sc.nextLine();
-            		Camp campToEnquire = allCamp.getCamp(campName);
-            		student.submitEnquiry(campToEnquire);
-            		break;
-            	case 5:
-            		student.viewEnquiry();
-            		break;
-            	case 6:
-            		System.out.println("Enter the camp you want to withdraw: ");
-            		campName = sc.nextLine();
-            		Camp campToWithdraw = allCamp.getCamp(campName);
-            		student.withdrawCamp(campToWithdraw);
-            		break;
-            	case 7:
-            		User.changePassword(student);
-            		break;
-            	case 8:
-            		User.loggedInUser = null;
-            		User.main(null);
-            		return;
-            	case 9:
-            		System.out.println("Exiting...");
-            		System.exit(0);
-            		break;
-            	default:
-            		System.out.println("Invalid choice. Try again.");
-            }
-		}catch (NumberFormatException e) {
-			System.out.println("Please enter a valid number.");
-			}
-		}
-	}
+    public Camp getRegisteredCampOption(int campOption) {   //this is a new method to return registeredCamp obj
+        return enrolledCamps.get(campOption-1);
+    }
+    
+    public CampCommitteeMembers getCommitteeMember() {
+    	return this.CommitteeMember;
+    }
+    
+    public boolean getIsCampCommitteeMember() {
+    	return this.isCampCommitteeMember;
+    }
+	
+
 }
 

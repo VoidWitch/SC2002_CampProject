@@ -18,7 +18,63 @@ public class Staff extends User{ //inherit user class
 
     public void createCamp(){
         //camp tied to staffIC and their faculty
-        Camp newCamp = new Camp(super.getName(), super.getFaculty());
+    	int date = 1;
+    	int no = 99;
+    	int campCommitteeSlots = 0;
+    	boolean visibility = true;
+    	
+    	System.out.println("Enter the name for the camp: ");
+    	String campName = sc.nextLine();
+    	System.out.println("Enter the start date for the camp: ");
+    	int startDate = sc.nextInt();
+    	sc.nextLine();
+    	System.out.println("Enter the last date for the camp: ");
+    	int endDate = sc.nextInt();
+    	sc.nextLine();
+    	System.out.println("Enter the registration closing date for the camp: ");
+    	int registrationClosingDate = sc.nextInt();
+    	sc.nextLine();
+    	System.out.println("Enter the location for the camp: ");
+    	String location = sc.nextLine();
+    	System.out.println("Enter the total participant slots for the camp: ");
+    	int totalSlots = sc.nextInt();
+    	sc.nextLine();
+    	
+    	do {
+    		System.out.println("Enter the camp committee slots for the camp: (No more than 10)");
+    		no = sc.nextInt();
+        	sc.nextLine();
+        	if(no<=10 & no>0) {
+        		campCommitteeSlots =  no;
+        		break;
+        	}
+        	else {
+        		System.out.println("The camp committee slots should be more than 10.");
+        	}
+    	}while(no>10);
+    	System.out.println("Enter the description for the camp: ");
+    	String campDescription = sc.nextLine();
+    	System.out.println("Do you want this camp to be visible to students? (Y/N) ");
+    	String answer = sc.nextLine();
+		do {
+			
+			if(answer.equals("Y")) {
+				visibility = true;
+				break;
+			}
+			else if(answer.equals("N")) {
+				visibility = false;
+				break;
+			}
+			else {
+				System.out.println("Invalid input. Please enter 'Y' or 'N'. ");
+				answer = sc.nextLine();
+			}
+		}while(!answer.equals("Y") && !answer.equals("N"));
+    	
+    	Camp newCamp = new Camp(campName, startDate, endDate, registrationClosingDate, location, totalSlots, campCommitteeSlots, campDescription,
+    			super.getName(), visibility,super.getFaculty());
+
         campsCreated.add(newCamp);  //update to campsCreated list by staff
 
 
@@ -52,14 +108,16 @@ public class Staff extends User{ //inherit user class
     }
     public void viewCamp(Camp camp){    //click into camp to get more details
         camp.viewCampInfo();    //view camp details
-        camp.viewAttendeeList();    //view attendee list
-        camp.viewCampCommitteeMemberList(); //view committee member list
+        //camp.viewAttendeeList();    //view attendee list
+        //camp.viewCampCommitteeMemberList(); //view committee member list
     }
 
 
     public void viewAllCamps(){  //view camp names only - click in to view more
-        for(Camp camp : allCamp.getAllCamps()){     //iterate thru allcamps
-            System.out.println(camp.getCampName());
+        allCamp.sortAllCamps();
+    	for(Camp camp : allCamp.getAllCamps()){     //iterate thru allcamps
+            camp.viewCampInfo();
+    		System.out.println();
         }
     }
 
@@ -82,7 +140,7 @@ public class Staff extends User{ //inherit user class
 
 
     public void approveSuggestion(Suggestion suggestion, CampCommitteeMembers committeemember){
-        suggestion.setProcessed();  //process suggestion
+        suggestion.setProcessed(true);  //process suggestion
         committeemember.addPoints(1); //add points for approval
     }
 
@@ -93,55 +151,133 @@ public class Staff extends User{ //inherit user class
 
 
     public void editCamp(Camp camp){
-        System.out.println("Edit(choose an option): "); //order according to format in CAMPINFO
-        int choice = sc.nextInt();
-        switch (choice){
-            case 1:
-                System.out.print("Enter new camp name: ");
-                camp.setCampName(sc.nextLine()); break;
-            case 2:
-                while(true){
-                    System.out.print("1. Add date:\n" +
-                                    "2. Remove date:\n" +
-                                    "3. Quit\n");
-                    int input = sc.nextInt();
-                    if(input==1){
-                        System.out.print("Enter date: ");
-                        camp.addCampDate(sc.nextInt());
-                        System.out.println("Dates: " + camp.getCampDates()); continue;    //view updated dates
-                    }
-                    if(input==2){
-                        System.out.print("Enter date: ");
-                        camp.removeCampDate(sc.nextInt());
-                        System.out.println("Dates: " + camp.getCampDates()); continue;    //view updated dates
-                    }
-                    break;
-                } break;
-            case 3:
-                System.out.print("Enter new registration closing date: ");
-                camp.setRegistrationClosingDate(sc.nextInt()); break;
-            case 4:
-            	System.out.println("Do you want this camp to be visible? (Y/N");
-            	String visible = sc.nextLine();
-            	if(visible=="Y") {
-            		camp.setVisibility(true);
-            	}
-            	else if(visible=="N") {
-            		camp.setVisibility(false);
-            	}
-            	 break;  //toggle boolean
-            case 5:
-                System.out.print("Enter new location: ");
-                camp.setLocation(sc.nextLine()); break;
-            case 6:
-                System.out.print("Enter new total slots: ");
-                camp.setTotalSlots(sc.nextInt()); break;
-            case 7:
-                System.out.print("Enter new camp committee slots: ");
-                camp.setCampCommitteeSlots(sc.nextInt()); break;
-            case 8:
-                System.out.print("Enter new description: ");
-                camp.setDescription(sc.nextLine()); break;
+		boolean vEdit = true;
+		while(vEdit) {
+			System.out.println("\n--- Edit Menu ---");
+	        System.out.println("[1] Camp Name");
+			System.out.println("[2] Camp Date");
+	        System.out.println("[3] Registration Closing Date");
+	        System.out.println("[4] Toggle Camp Visibility");
+	        System.out.println("[5] Location");
+	        System.out.println("[6] Total Slots");
+			System.out.println("[7] Camp Comittee Slots");
+	        System.out.println("[8] Camp description");
+	        System.out.println("[9] Return to Created Camp Menu");
+	        System.out.println("Enter your choice: ");
+	        int choice = sc.nextInt();
+	        sc.nextLine();
+	        switch (choice){
+	            case 1:
+	                String oldCampName = camp.getCampName();
+	                System.out.println("Current camp name: " + oldCampName);
+	            	System.out.println("Enter new camp name: ");
+	                String newCampName = sc.nextLine();
+	                camp.setCampName(newCampName);
+	                System.out.println("Camp name has been changed from " + oldCampName + " to " + camp.getCampName() + " .");
+	                break;
+	            case 2:
+	            	System.out.println("Current start Date: " + camp.getCampStartDate());
+	            	System.out.println("Current end Date: " + camp.getCampEndDate());
+	            	System.out.println("Enter new start date for Camp " + camp.getCampName() + " : ");
+	            	int newStartDate = sc.nextInt();
+	            	sc.nextLine();
+	            	System.out.println("Enter new end date for Camp " + camp.getCampName() + " : ");
+	            	int newEndDate = sc.nextInt();
+	            	sc.nextLine();
+	            	camp.setCampDates(newStartDate,newEndDate);
+	            	System.out.println("Camp date of Camp " + camp.getCampName() + " has been changed to " + camp.getCampStartDate() + " - " + camp.getCampEndDate() + ".");
+	                break;
+	            case 3:
+	                int oldDate = camp.getRegistrationClosingDate();
+	                System.out.println("Current registration closing date: " + oldDate);
+	                System.out.println("Enter new registration closing date: ");
+	                int newRegistrationClosingDate = sc.nextInt();
+	                camp.setRegistrationClosingDate(newRegistrationClosingDate);
+	                System.out.println("Registration closing date of Camp " + camp.getCampName() + " has been changed from " + oldDate + " to " + camp.getRegistrationClosingDate() +".");
+	                break;
+	            case 4:
+	            	boolean oldVis = camp.getVisibility();
+	            	if(oldVis) {
+	            		System.out.println("Camp " + camp.getCampName() + " is currently open for students.");
+	            		System.out.println("Do you want to toggle its visibility? (Y/N)");
+	            	}
+	            	else {
+	            		System.out.println("Camp " + camp.getCampName() + " is currently NOT open for students.");
+	            	}
+	            	System.out.println("Do you want to toggle its visibility? (Y/N)");
+	            	String ans = sc.nextLine();
+	            	if(ans.equals("Y")) {
+	            		if(oldVis) {
+	            			camp.setVisibility(false);
+	            			System.out.println("Camp " + camp.getCampName() + " has been changed to NOT open for students.");
+	            		}
+	            		else if (!oldVis) {
+	            			camp.setVisibility(true);
+	            			System.out.println("Camp " + camp.getCampName() + " has been changed to open for students.");
+	            		}
+	            		
+	            	}
+	            	else if(ans.equals("N")) {
+	            		if(oldVis) {
+	            			System.out.println("Camp " + camp.getCampName() + " remains open for students.");
+	            		}
+	            		else if (!oldVis) {
+	            			System.out.println("Camp " + camp.getCampName() + " remains NOT open for students.");
+	            		}
+	            	}
+	            	 break;  //toggle boolean
+	            case 5:
+	                String oldLocation = camp.getLocation();
+	                System.out.println("Current location for Camp " + camp.getCampName() + ": " + oldLocation);
+	                System.out.println("Enter new location: ");
+	            	String newLocation = sc.nextLine();
+	                camp.setLocation(newLocation);
+	                System.out.println("Camp " + camp.getCampName() + " location has been changed from " + oldLocation + " to " + camp.getLocation() + ".");
+	                break;
+	            case 6:
+	                int oldSlots = camp.getTotalSlots();
+	                System.out.println("The currect total slots for Camp " + camp.getCampName() + ": " + oldSlots);
+	            	System.out.println("Enter new total slots: ");
+	            	int newSlots = sc.nextInt();
+	            	sc.nextLine();
+	                camp.setTotalSlots(newSlots); 
+	                System.out.println("The total slots for Camp " + camp.getCampName() + " has been changed from " + oldSlots + " to " + camp.getTotalSlots() + ".");
+	                break;
+	            case 7:
+	                int temp = 11;
+	            	int oldCMSlots = camp.getCampCommitteeSlots();
+	                System.out.println("The currect Committee slots for Camp " + camp.getCampName() + ": " + oldCMSlots);
+	                do {
+	                	System.out.println("Enter new camp committee member slots: (No more than 10)");
+	                	temp = sc.nextInt();
+	                	sc.nextLine();
+	                	if(temp<=10 & temp>0) {
+	                		int newCMSlots = temp;
+	                		camp.setCampCommitteeSlots(newCMSlots); 
+	                        System.out.println("The  for Camp " + camp.getCampName() + " has been changed from " + oldCMSlots + " to " + camp.getTotalSlots() + ".");
+	                		break;
+	                	}
+	                	else {
+	                		System.out.println("The camp committee slots should be more than 10.");
+	                	}
+	            	}while(temp>10);
+	                
+	                
+	                break;
+	            case 8:
+	            	String oldDesc = camp.getDescription();
+	                System.out.println("The current description for Camp " + camp.getCampName() + ": " + oldDesc);
+	                System.out.println("Enter new description: ");
+	            	String newDesc = sc.nextLine();
+	                camp.setLocation(newDesc);
+	                System.out.println("Camp " + camp.getCampName() + " description has been changed from " + oldDesc + " to " + camp.getDescription() + ".");
+	            	break;
+	            case 9:
+	            	vEdit = false;
+	            	break;
+	            default:
+	            	System.out.println("Invalid Input.");
+	        }
         }
     }
 
@@ -185,247 +321,8 @@ public class Staff extends User{ //inherit user class
         return camp.getCampCommitteeMembers();
     }
     
-    public static void main(String[] args) {
-    	Staff staff = (Staff) User.loggedInUser;
-    	Scanner sc = new Scanner(System.in);
-    	int choice;
-    	
-    	while(true) {
-    		System.out.println("\n--- Staff Menu ---");
-            System.out.println("1. Create Camp");
-            System.out.println("2. Edit Camp");
-            System.out.println("3. Delete Camp");
-            System.out.println("4. View Camp");
-            System.out.println("5. View Created Camps");
-            System.out.println("6. View All Camps");
-            System.out.println("7. Toggle Camp Visibility");
-            System.out.println("8. View Camp Enquiries");
-            System.out.println("9. Reply to Camp Enquiries");
-            System.out.println("10. View Suggestions");
-            System.out.println("11. Approve Suggestion");
-            System.out.println("12. Generate CSV Report");
-            System.out.println("13. Generate TXT Report");
-            System.out.println("14. Change Password");
-            System.out.println("15. Log Out");
-            System.out.println("16. Exit");
-            System.out.print("Enter your choice: ");
-            
-            try {
-            	choice = sc.nextInt();
-            	
-            	switch(choice) {
-            	case 1:
-            		staff.createCamp();
-            		break;
-            	case 2:
-            		System.out.println("Enter the camp you want to toggle its visibility to students: ");
-            		String campName = sc.nextLine();
-            		Camp campToEdit = staff.getCreatedCamp(campName);
-            		if(campToEdit != null) {
-            			staff.editCamp(campToEdit);
-            		}
-            		else {
-            			System.out.println("You dont have a camp created called " + campName +" .");
-            		}
-            		break;
-            	case 3:
-            		staff.viewCreatedCamps();
-            		if(staff.campsCreated.isEmpty()) {
-            			System.out.println("No camp is deleted.");
-            		}
-            		else {
-            	    	System.out.println("Enter the name of the camp you want to delete: ");
-            	    	campName = sc.nextLine();
-            	    	Camp campToDelete = staff.getCreatedCamp(campName); 
-            	    	if(campToDelete!=null) {
-            	    		staff.deleteCamp(campToDelete);
-            	    		System.out.println("Camp " + campName + " is deleted successfully.");
-            	    	}
-            	    	else {
-            	    		System.out.println("Camp not found.");
-            	    	}
-            		}
-            		break;
-            	case 4:
-            		System.out.println("Enter the camp you want to view: ");
-            		campName = sc.nextLine();
-            		Camp campToView = allCamp.getCamp(campName);
-            		if(campToView != null) {
-            			staff.viewCamp(campToView);
-            		}
-            		else {
-            			System.out.println("No such camp.");
-            		}
-            		break;
-            	case 5:
-            		staff.viewCreatedCamps();
-            		break;
-            	case 6:
-            		staff.viewAllCamps();
-            		break;
-            	case 7:
-            		System.out.println("Enter the camp you want to toggle its visibility to students: ");
-            		campName = sc.nextLine();
-            		Camp campToToggle = allCamp.getCamp(campName);
-            		if(campToToggle != null) {
-            			if(campToToggle.getVisibility()== true) {
-            				System.out.println("Camp " + campName + " is visible to students.");
-            			}
-            			else  {
-            				System.out.println("Camp " + campName + " is not visible to students.");
-            			}
-            			System.out.println("Do you want to toggle its visibility?(Y/N)");
-            			String answer = sc.nextLine();
-            			do {
-            				if(answer == "Y") {
-                				campToToggle.toggleVisibility();
-                				System.out.println("Camp " + campName + " visibility is toggled.");
-                				break;
-                			}
-                			else if(answer == "N") {
-                				System.out.println("Camp " + campName + " visibility is not toggled.");
-                				break;
-                			}
-                			else {
-                				System.out.println("Invalid input.");
-                				continue;
-                			}
-            			}while(answer!="Y" & answer!="N");
-            		}
-            		else {
-            			System.out.println("Camp " + campName + " is not found.");
-            		}
-            	case 8:
-            		staff.viewCreatedCamps();
-            		System.out.println("Enter the camp that you want to view enquiries: ");
-            		campName = sc.nextLine();
-            		Camp campToViewEnq = staff.getCreatedCamp(campName);
-            		if(campToViewEnq!=null) {
-            			campToViewEnq.viewEnquiries();
-            		}
-            		else {
-            			System.out.println("There is no Camp " + campName + " created.");
-            		}
-            		break;
-            	case 9:
-            		System.out.println("Enter the camp: ");
-            		campName = sc.nextLine();
-            		Camp campReply = staff.getCreatedCamp(campName);
-            		if(campReply!=null) {
-            			campReply.viewEnquiries();
-            			System.out.println("Enter the enquiry you want to reply: ");
-                		String enquiryName = sc.nextLine();
-                		Enquiry enquiryToReply = campReply.getEnquiry(enquiryName);
-                		if(enquiryToReply != null) {
-                			System.out.println(enquiryToReply.getEnquiry());
-                			System.out.println("Enter your reply for this enquiry: ");
-                			String reply = sc.nextLine();
-                			enquiryToReply.replyEnquiry(reply);
-                			enquiryToReply.viewEnquiry();
-                		}
-                		else {
-                			System.out.println("There is no such enquiry.");
-                		}
-            		}
-            		else {
-            			System.out.println("There is no Camp " + campName + " created.");
-            		}
-            		
-            		break;
-            	case 10:
-            		staff.viewCreatedCamps();
-            		System.out.println("Enter the camp that you want to view suggestion: ");
-            		campName = sc.nextLine();
-            		Camp campToViewSug = staff.getCreatedCamp(campName);
-            		if(campToViewSug!=null) {
-            			campToViewSug.viewSuggestions();
-            		}
-            		else {
-            			System.out.println("There is no Camp " + campName + " created.");
-            		}
-            		break;
-            	case 11:
-            		System.out.println("Enter the camp: ");
-            		campName = sc.nextLine();
-            		Camp campSug = staff.getCreatedCamp(campName);
-            		if(campSug!=null) {
-            			campSug.viewSuggestions();
-            			System.out.println("Enter the suggestion you want to process: ");
-                		String sugName = sc.nextLine();
-                		Suggestion sugToProcessed = campSug.getSuggestion(sugName);
-                		if(sugToProcessed != null) {
-                			System.out.println(sugToProcessed.getSuggestion());
-                			System.out.println("Do you want to approve this suggestion? (Y/N) ");
-                			String reply = sc.nextLine();
-                			do {
-                				if(reply == "Y") {
-                    				sugToProcessed.setProcessed();
-                    				campSug.addApprovedSuggestion(sugToProcessed);
-                    				System.out.println("The suggestion is approved.");
-                    				break;
-                    			}
-                    			else if(reply == "N") {
-                    				System.out.println("The suggestion is not approved yet.");
-                    				break;
-                    			}
-                    			else {
-                    				System.out.println("Invalid input.");
-                    				continue;
-                    			}
-                			}while(reply!="Y" & reply!="N");
-                		}
-                		else {
-                			System.out.println("There is no such enquiry.");
-                		}
-            		}
-            		else {
-            			System.out.println("There is no Camp " + campName + " created.");
-            		}
-            		
-            		break;
-            	case 12:
-            		System.out.println("Enter the name of the camp you want to generate CSV file: ");
-        	    	campName = sc.nextLine();
-        	    	Camp campCSV = staff.getCreatedCamp(campName); 
-        	    	if(campCSV!=null) {
-        	    		staff.generateCSV(campCSV);
-        	    		System.out.println("CVS file for Camp " + campName + " is generated successfully.");
-        	    	}
-        	    	else {
-        	    		System.out.println("Camp not found.");
-        	    	}
-            		
-            		break;
-            	case 13:
-            		System.out.println("Enter the name of the camp you want to generate TXT file: ");
-        	    	campName = sc.nextLine();
-        	    	Camp campTXT = staff.getCreatedCamp(campName); 
-        	    	if(campTXT!=null) {
-        	    		staff.generateTXT(campTXT);
-        	    		System.out.println("TXT file for Camp " + campName + " is generated successfully.");
-        	    	}
-        	    	else {
-        	    		System.out.println("Camp not found.");
-        	    	}
-            		break;
-            	case 14:
-            		User.changePassword(staff);
-            		break;
-            	case 15:
-            		User.loggedInUser = null;
-            		User.main(null);
-            		return;
-            	case 16:
-            		System.out.println("Exiting...");
-            		System.exit(0);
-            		break;
-            	default:
-            		System.out.println("Invalid choice. Try again");
-            	}
-            }catch(NumberFormatException e) {
-            	System.out.println("Please enter a valid number.");
-            }
-    	}
+    public List<Camp> getCampsCreated(){
+    	return this.campsCreated;
     }
 }
 

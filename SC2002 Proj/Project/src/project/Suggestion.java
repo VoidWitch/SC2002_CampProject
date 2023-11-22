@@ -4,6 +4,7 @@ import java.util.*;
 
 public class Suggestion {
 	private Camp camp;
+	private boolean approved;
 	private boolean suggestionProcessed;
 	private String suggestion;
 	
@@ -11,6 +12,7 @@ public class Suggestion {
 		this.camp = camp;
 		this.suggestion = suggestion;
 		this.suggestionProcessed = false;
+		this.approved = false;
 	}
 	
 	public void viewSuggestion(String suggestion) {
@@ -36,10 +38,15 @@ public class Suggestion {
 		return suggestion;
 	}
 	
-	public void setProcessed() {
+	public void setProcessed(boolean approval) {
 		this.suggestionProcessed = true;
+		this.approved = approval;
 	}
 	public boolean isSuggestionProcessed() {
 		return suggestionProcessed;
+	}
+	
+	public boolean isSuggestionApproved() {
+		return this.approved;
 	}
 }

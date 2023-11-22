@@ -9,7 +9,7 @@ public class CampCommitteeMembers extends Student{
     private int points;
     Scanner sc = new Scanner(System.in);
 
-    public CampCommitteeMembers(String name, String email, String faculty, boolean isCampCommitteeMember)
+    public CampCommitteeMembers(String name, String email, String faculty, boolean isCampCommitteeMember, Camp camp)
     {
         super(name, email,faculty, isCampCommitteeMember);
         this.camp = camp;
@@ -55,14 +55,25 @@ public class CampCommitteeMembers extends Student{
             i++;
         }
     }
+    
+    public Suggestion getSuggestionObj(int suggestionnumber) {
+    	return ownSuggestions.get(suggestionnumber -1);
+    }
 
 
     public void editSuggestion(Suggestion suggestions) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Type in your edited suggestion:");
-        String userInputString = scanner.nextLine();
-        //ownSuggestions.setSuggestion(userInputString);
-        suggestions.setSuggestion(userInputString);
+        //if suggestion is processed cannot edit alrdy
+  	    if(suggestions.isSuggestionProcessed()){
+  	        System.out.println("Suggestion processed! Not open to editing.");
+  	    }
+  	    else {
+  	        System.out.println("Type in your edited suggestion:");
+  	        String userInputString = scanner.nextLine();
+  	        //ownSuggestions.setSuggestion(userInputString);
+  	        suggestions.setSuggestion(userInputString);
+  	    }
+
     }
 
 

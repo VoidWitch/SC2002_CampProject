@@ -11,50 +11,64 @@ public class Camp {
  private List<Suggestion> suggestions;
  private List<Suggestion> approvedSuggestions;
  private String campName;
- private List<Integer> campDates;
+ private int startDate;
+ private int endDate;
  private int registrationClosingDate;
  private String location;
- private int totalSlots;
- private int remainingSlots;
- private int campCommitteeSlots;
+ private int totalSlots; //inclusive of committee slots
+ private int numberOfParticipants;
+ private int campCommitteeSlots; // max 10
+ private int numberOfCommitteeMembers;
  private String campDescription;
  private String campStaffIC;
  private boolean visibility;
  private String faculty;
  // Constructor
- public Camp(String name, String faculty) {
-     this.campStaffIC = name;
+ public Camp(String campName, int startDate, int endDate, int registrationClosingDate, String location, int totalSlots, int campCommitteeSlots, String campDescription
+		 , String name, boolean visibility, String faculty) {
+	 this.campName = campName;
+	 this.startDate = startDate;
+	 this.endDate = endDate;
+	 this.registrationClosingDate = registrationClosingDate;
+	 this.location = location;
+	 this.totalSlots = totalSlots;
+	 this.campCommitteeSlots = campCommitteeSlots;
+	 this.campDescription = campDescription;
+	 this.campStaffIC = name;
+	 this.visibility = visibility;
      this.faculty = faculty;
+     this.numberOfParticipants = 0;
+     this.numberOfCommitteeMembers = 0;
      this.attendee = new ArrayList<>();
      this.member = new ArrayList<>();
      this.enquiries = new ArrayList<>();
      this.suggestions = new ArrayList<>();
-     this.campDates = new ArrayList<>();
+     
  }
  // Methods to set and get camp info
  public void setCampName(String newname) {
      this.campName = newname;
  }
  // Add other methods to set and get camp info
- public List<Integer> getCampDates() {
-     return campDates;
+
+ public int getCampStartDate() {
+     return startDate;
  }
- public void removeCampDate(int date) {
-     campDates.remove(Integer.valueOf(date));
+  public int getCampEndDate() {
+     return endDate;
  }
- public void addCampDate(int date) {
-     campDates.add(date);
- }
+
  public void addAttendee(Student newAttendee) {
      if(newAttendee == null) {
     	 System.out.println("Invalid attendee. Cannot add null");
     	 return;
      }
-	 if (remainingSlots > 0) {            
+	 if (this.getRemainingSlots() > 0) {            
          attendee.add(newAttendee);
-         remainingSlots--;
+         numberOfParticipants++;
+         //remainingSlots--;
          System.out.println("Attendee added successfully!");
-         System.out.println("Remaining Slots: " + remainingSlots);
+         System.out.println("Remaining Slots: " + this.getRemainingSlots());
      } else {
          System.out.println("Sorry, the camp is already full. Cannot add more attendees.");
      }
@@ -63,12 +77,14 @@ public class Camp {
  public void removeAttendee(Student student) {
      if (attendee.contains(student)) {
          attendee.remove(student);
-         remainingSlots++;
+         //remainingSlots++;
+         numberOfParticipants--;
          System.out.println("Attendee removed successfully.");
      } else {
          System.out.println("Student is not registered as an attendee.");
      }
  }
+
  public void addEnquiry(Enquiry enquiry) {
      enquiries.add(enquiry);
      System.out.println("Enquiry added successfully.");
@@ -93,18 +109,42 @@ public class Camp {
          System.out.println("Suggestion not found in the list.");
      }
  }
- public void viewEnquiries() {
-     System.out.println("Enquiries:");
-     for (Enquiry enquiry : enquiries) {
-         System.out.println(enquiry.toString());
+ public void viewEnquiries() {   //edited implementation
+     if(enquiries.isEmpty()) System.out.println("No enquiries found.");
+     else{
+         System.out.println("Enquiries:");
+         int i = 1;
+         for (Enquiry enquiry : enquiries) {
+             System.out.print(i + enquiry.getEnquiry());
+             i++;
+         }
      }
  }
- public void viewSuggestions() {
-     System.out.println("Suggestions:");
-     for (Suggestion suggestion : suggestions) {
-         System.out.println(suggestion.toString());
-     }
+ 
+ public Enquiry getEnquiryObj(int enquirynumber){    //new method
+     int index = enquirynumber - 1;
+     return enquiries.get(index);
  }
+
+
+ public void viewSuggestions() {     //edited implementation
+     if (suggestions.isEmpty()) System.out.println("No suggestions found.");
+     else{
+         System.out.println("Suggestions:");
+         int i = 1;
+         for (Suggestion suggestion : suggestions) {
+             System.out.println(i + suggestion.getSuggestion());
+             i++;
+         }
+     }
+
+
+ }
+ public Suggestion getSuggestionObj(int suggestionnumber) {  //new method
+     int index = suggestionnumber - 1;
+     return suggestions.get(index);
+ }
+
  public List<Student> getAttendees() {
      return attendee;
  }
@@ -114,43 +154,34 @@ public class Camp {
  public void viewCampInfo() {
      System.out.println("Camp Information:");
      System.out.println("Name: " + campName);
-     System.out.println("Dates: " + campDates);
+     System.out.println("Start Date: " + startDate);
+     System.out.println("End Date: " + endDate);
      System.out.println("Registration Closing Date: " + registrationClosingDate);
      System.out.println("Location: " + location);
      System.out.println("Total Slots: " + totalSlots);
-     System.out.println("Remaining Slots: " + remainingSlots);
+     System.out.println("Number of Participants: " + numberOfParticipants);
      System.out.println("Camp Committee Slots: " + campCommitteeSlots);
+     System.out.println("Number of Committee Members: " + numberOfCommitteeMembers);
      System.out.println("Description: " + campDescription);
      System.out.println("Staff IC: " + campStaffIC);
      System.out.println("Visibility: " + visibility);
      System.out.println("Faculty: " + faculty);
  }
- public void viewAttendeeList() {
-     System.out.println("Attendee List:");
-     for (Student attendee : attendee) {
-         System.out.println(attendee.toString());
+ public void viewAttendeeList(){     //added new method
+     if(attendee.isEmpty()) System.out.println("No attendees.");
+     else{
+         System.out.println("Attendee List:");
+         for (Student attendee : attendee){
+             System.out.println(attendee.getName());
+         }
      }
  }
- public void viewCampCommitteeMemberList() {
-     System.out.println("Camp Committee Members:");
-     for (CampCommitteeMembers member : member) {
-         System.out.println(member.toString());
-     }
- }
- 
+
  public boolean getVisibility() {
 	 return this.visibility;
  }
  public void setVisibility(boolean visible) {
 	 this.visibility = visible;
- }
- public void toggleVisibility() {
-	 if(this.visibility==true) {
-		 this.visibility = false;
-	 }
-	 else {
-		 this.visibility = true;
-	 }
  }
  
  public String getCampFaculty() {
@@ -161,14 +192,22 @@ public class Camp {
 	 return this.campName;
  }
  public int getRemainingSlots() {
-	 return this.remainingSlots;
+	 return this.totalSlots - this.numberOfParticipants;
  }
  public int getRegistrationClosingDate() {
 	 return this.registrationClosingDate;
  }
- public void setRemainingSlots(int n) {
-	 this.remainingSlots = n;
+ public int numberOfParticipants() {     //new method
+     return this.numberOfParticipants;
  }
+ public int getnumberOfCommitteeMembers() {  //new method
+     return this.numberOfCommitteeMembers;
+ }
+ public int getRemainingCommitteeSlots() {   //new method
+     return this.campCommitteeSlots - this.numberOfCommitteeMembers;
+ }
+
+
  public Enquiry getEnquiry(String enquiryName) {
 	 for(Enquiry enquiry: enquiries){    //check if camp is within list of camps created
          if(enquiryName.toLowerCase().equals(enquiry.getEnquiry().toLowerCase())){
@@ -220,5 +259,32 @@ public class Camp {
  public String getCampStaffIC() {
 	 return this.campStaffIC;
  }
+ public void setCampDates(int startDate, int endDate) {
+	 this.startDate = startDate;
+	 this.endDate = endDate;
+ }
+ 
+ public void addCampCommitteeMember(CampCommitteeMembers newCommitteeMember) {       //added new method
+     member.add(newCommitteeMember);
+     numberOfCommitteeMembers++;
+     System.out.println("Committee member added successfully!");
+ }
+ public void removeCampCommitteeMember(CampCommitteeMembers newCommitteeMember) {        //added new method
+     member.remove(newCommitteeMember);
+     numberOfCommitteeMembers--;
+     System.out.println("Committee member removed successfully.");
+ }
+ public void viewCampCommitteeMemberList() {
+     if(member.isEmpty()) System.out.println("No committee members.");
+     else{
+         System.out.print("Camp committee members:");
+         for (CampCommitteeMembers committeemember : member){
+             System.out.println(committeemember.getName());
+         }
+     }
+
+
+ }
+
 }
 
